@@ -1,0 +1,59 @@
+version: "3"
+services:
+  ksynth-wired:
+    container_name: ksynth-wired
+    image: kentik/ksynth-agent
+    restart: unless-stopped
+    networks:
+      wired:
+        ipv4_address: 10.140.24.11
+    hostname: ksynth-wired
+    env_file:
+      - ksynth-agent.env
+    command:
+      - ksynth-agent 
+      - -c ${KENTIK_COMPANY}
+      - -r ${KENTIK_REGION}
+    volumes:
+      - ./data/wired:/var/lib/ksynth-agent
+  ksynth-wireless:
+    container_name: ksynth-wireless
+    image: kentik/ksynth-agent
+    restart: unless-stopped
+    networks:
+      wireless:
+        ipv4_address: 10.140.23.11
+    hostname: ksynth-wireless
+    env_file:
+      - ksynth-agent.env
+    command:
+      - ksynth-agent 
+      - -c ${KENTIK_COMPANY}
+      - -r ${KENTIK_REGION}
+    volumes:
+      - ./data/wireless:/var/lib/ksynth-agent
+
+networks:
+  wired:
+    driver: macvlan
+    driver_opts:
+      parent: ens3
+      macvlan_mode: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.140.24.0/24
+          ip_range: 10.140.24.15/32
+          gateway: 10.140.24.254
+
+  wireless:
+    driver: macvlan
+    driver_opts:
+      parent: ens4
+      macvlan_mode: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.140.23.0/24
+          ip_range: 10.140.23.15/32
+          gateway: 10.140.23.254

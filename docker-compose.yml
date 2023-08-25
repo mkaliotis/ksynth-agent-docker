@@ -1,0 +1,16 @@
+version: "3"
+services:
+  ksynth-agent:
+    container_name: ksynth-agent
+    image: kentik/ksynth-agent
+    restart: unless-stopped
+    network_mode: host
+    hostname: ${KENTIK_KSYNTH_NAME}
+    env_file:
+      - ksynth-agent.env
+    command:
+      - ksynth-agent 
+      - -c ${KENTIK_COMPANY}
+      - -r ${KENTIK_REGION}
+    volumes:
+      - ./data/ksynth-agent:/var/lib/ksynth-agent
